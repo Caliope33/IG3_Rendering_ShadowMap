@@ -288,7 +288,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    camera.ProcessMouseMovement(xoffset/100, yoffset/100);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
