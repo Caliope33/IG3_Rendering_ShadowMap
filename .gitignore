@@ -2,6 +2,7 @@
 bin/
 build/
 out/
+src/base/
 
 ### C ###
 # Prerequisites
