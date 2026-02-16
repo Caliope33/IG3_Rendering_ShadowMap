@@ -1,0 +1,12 @@
+#ifndef INPUT_HANDLER_H
+#define INPUT_HANDLER_H
+
+#include <GLFW/glfw3.h>
+#include "Camera.h" // Pour que les fonctions puissent modifier la caméra
+
+// On déclare les fonctions pour que le main les connaisse
+void processInput(GLFWwindow* window, Camera& camera, float deltaTime);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+#endif
