@@ -1,6 +1,7 @@
 #ifndef INPUT_HANDLER_H
 #define INPUT_HANDLER_H
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 void processInput(GLFWwindow* window);

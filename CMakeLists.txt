@@ -106,6 +106,8 @@ function(create_project_from_sources chapter demo)
              "src/${chapter}/${demo}/*.tes"
              "src/${chapter}/${demo}/*.gs"
              "src/${chapter}/${demo}/*.cs"
+	     "src/${chapter}/${demo}/*.bin"
+	     "src/${chapter}/${demo}/*.gltf"
     )
 	# copy dlls
 	file(GLOB DLLS "dlls/*.dll")

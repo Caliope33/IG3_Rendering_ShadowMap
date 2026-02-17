@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include "InputHandler.h"
 #include <learnopengl/camera.h>
 #include <GLFW/glfw3.h>
