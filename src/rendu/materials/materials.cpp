@@ -40,6 +40,7 @@ float lastFrame = 0.0f;
 
 // lighting
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos2(-2.0f,1.2f,1.0f);
 
 int main()
 {
@@ -88,13 +89,14 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader Cube1Shader("materials.vs", "materials.fs");
+    Shader MaterialShader("materials.vs", "materials.fs");
     Shader lightShader("1.light_cube.vs", "1.light_cube.fs");
-    //Shader Cube2Shader();
 
     Model Cube1("Box.gltf");//load the file and creates VAO/VBO
+    Model Cube2("Box.gltf");//on peut aussi mettre un cylindre
     Model Light1("Box.gltf");
-
+    Model Light2("Box.gltf");
+    
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -111,34 +113,52 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // --- Rendu de l'objet PBR ---
-        // be sure to activate shader when setting uniforms/drawing objects
-        Cube1Shader.use();
+        MaterialShader.use();
         //UPDATE Uniforms in materials.fs
-        Cube1Shader.setVec3("u_LightPos", lightPos);
-        Cube1Shader.setVec3("u_CameraPos", camera.Position);
+        MaterialShader.setInt("u_LightCount",2);
 
-        //PBR Parameters
-        Cube1Shader.setVec3("u_BaseColor", 2.0f, 0.5f, 1.0f);
-        Cube1Shader.setFloat("u_Metallic", 0.8f);   // Très métallique
-        Cube1Shader.setFloat("u_Roughness", 0.3f);  // Assez lisse
+        MaterialShader.setVec3("u_LightPos[0]", lightPos);
+        MaterialShader.setVec3("u_LightPos[1]", lightPos2);
+
+        MaterialShader.setVec3("u_CameraPos", camera.Position);
         
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //--- Rendu de l'objet PBR 1 ---
+        //PBR Parameters
+        MaterialShader.setVec3("u_BaseColor", 2.0f, 0.5f, 1.0f);//Lilac
+        MaterialShader.setFloat("u_Metallic", 0.8f);   // Très métallique
+        MaterialShader.setFloat("u_Roughness", 0.3f);  // Assez lisse
+        
+        glm::mat4 projection=glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10.0f); //100.0f
         glm::mat4 view = camera.GetViewMatrix();
-        Cube1Shader.setMat4("projection", projection);
-        Cube1Shader.setMat4("view", view);
-        Cube1Shader.setMat4("model", glm::mat4(1.0f));
-
+        MaterialShader.setMat4("projection", projection);
+        MaterialShader.setMat4("view", view);
+        glm::mat4 model1 = glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, 0.0f, 0.0f));
+        MaterialShader.setMat4("model", model1);
         Cube1.Draw();
+
+        //--- Rendu de l'objet PBR 2 ---
+        // On réutilise le même shader, seuls le modèle et les paramètres PBR changent
+        glm::mat4 model2 = glm::translate(glm::mat4(1.0f), glm::vec3(1.5f, 0.0f, 0.0f));
+        MaterialShader.setMat4("model", model2);
+        MaterialShader.setVec3("u_BaseColor", 0.5f, 1.0f, 0.2f); // couleur différente
+        MaterialShader.setFloat("u_Metallic", 0.1f);
+        MaterialShader.setFloat("u_Roughness", 0.8f);
+        Cube2.Draw();
 
         // --- Rendu de la lampe ---
         lightShader.use();
         lightShader.setMat4("projection", projection);
         lightShader.setMat4("view", view);
-       glm::mat4 model = glm::translate(glm::mat4(1.0f), lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
-        lightShader.setMat4("model", model);
-
+        glm::mat4 lightModel1 = glm::translate(glm::mat4(1.0f), lightPos);
+        lightModel1 = glm::scale(lightModel1, glm::vec3(0.1f));
+        lightShader.setMat4("model", lightModel1);
         Light1.Draw();
+
+        glm::mat4 lightModel2 = glm::translate(glm::mat4(1.0f), lightPos2);
+        lightModel2 = glm::scale(lightModel2, glm::vec3(0.1f));
+        lightShader.setMat4("model", lightModel2);
+        Light2.Draw();
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
